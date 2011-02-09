@@ -1,0 +1,12 @@
+{application, erlgeo,
+ [
+  {description, "Erlgeo is package for manipulation and analysis of planar geometric objects"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { erlgeo_app, []}},
+  {env, []}
+ ]}.

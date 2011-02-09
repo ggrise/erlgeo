@@ -1,0 +1,27 @@
+void erl_send_error(GEOSCommand *command, char *error);
+int next_char(GEOSCommand *command, char *p);
+int next_double(GEOSCommand *command, double *value);
+int next_long(GEOSCommand *command, long *value);
+int next_int(GEOSCommand *command, int *ivalue);
+int next_pointer(GEOSCommand *command, int argc, char *name, void** data);
+int next_geometry_list(GEOSCommand *command, GEOSGeometry*** geom);
+int next_geometry(GEOSCommand *command, GEOSGeometry** geom);
+int next_prepared_geometry(GEOSCommand *command, GEOSPreparedGeometry** geom);
+void send_pointer(GEOSCommand *command, char *name, void *pointer);
+int next_coordsequence(GEOSCommand *command, GEOSCoordSequence** seq);
+int next_wkbreader(GEOSCommand *command, GEOSWKBReader** reader);
+int next_wktreader(GEOSCommand *command, GEOSWKTReader** reader);
+int next_wkbwriter(GEOSCommand *command, GEOSWKBWriter** writer);
+int next_wktwriter(GEOSCommand *command, GEOSWKTWriter** writer);
+int next_string(GEOSCommand *command, char **data);
+int next_size_t(GEOSCommand *command, size_t *value);
+void send_int(GEOSCommand *command, long content);
+void send_ok(GEOSCommand *command);
+void send_double(GEOSCommand *command, double content);
+void send_string(GEOSCommand *command, const char* content);
+void send_binary(GEOSCommand *command, unsigned char* content, long len);
+void send_boolean(GEOSCommand *command, char boolean);
+void send_geometry(GEOSCommand *command, GEOSGeometry *geom);
+
+void terms_to_coordseq(GEOSCommand *command);
+void coordseq_to_terms(GEOSCommand *command);
