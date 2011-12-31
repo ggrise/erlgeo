@@ -1,10 +1,10 @@
--module(geometry3).
+-module(geometry).
 -export([run/2, run/3, run/4]).
 
 to_term(Context, Return = {ok, {ggeom, _}}) ->
 	{ok, Geom} = Return,
 	Context:coords(Geom);
-to_term(Context, E) ->
+to_term(_Context, E) ->
 	E.
 
 
@@ -22,17 +22,17 @@ run(Fun, Args) when is_function(Fun, 2) ->
 	end;
 
 run(Function, Arg1) when is_atom(Function) ->
-	run(fun(Context, Args) ->
+	run(fun(Context, _Args) ->
 			to_term(Context, Context:Function(Arg1))
 	end, []).
 
 run(Function, Arg1, Arg2) when is_atom(Function) ->
-	run(fun(Context, Args) ->
+	run(fun(Context, _Args) ->
 			to_term(Context, Context:Function(Arg1, Arg2))
 	end, []).
 
 run(Function, Arg1, Arg2, Arg3) when is_atom(Function) ->
-	run(fun(Context, Args) ->
+	run(fun(Context, _Args) ->
 			to_term(Context, Context:Function(Arg1, Arg2, Arg3))
 	end, []).
 

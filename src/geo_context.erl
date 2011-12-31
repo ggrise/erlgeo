@@ -56,9 +56,9 @@ wkt(Geom={ggeom, _}) ->
 
 register_geometry(null) ->
 	ok;
-register_geometry(G={ggeom, Ptr}) ->
+register_geometry({ggeom, Ptr}) ->
 	ets:insert(RefTable, {Ptr, ggeom}).
-is_registered(G={ggeom, Ptr}) ->
+is_registered({ggeom, Ptr}) ->
 	ets:member(RefTable, Ptr);
 is_registered(List) when is_list(List) ->
 	lists:all(fun(G) ->
@@ -148,7 +148,7 @@ create(polygon, {ShellList, Holes}) ->
 		{ok, ShellRing} ->
 			HolesRing = create_linearrings(Port, [], Holes),
 			case HolesRing of
-				E={ok, List} ->
+				{ok, List} ->
 					%we can create safely the polygon
 					create_polygon(ShellRing, List);
 				{error, _Reason} ->
@@ -191,7 +191,7 @@ create(wkt, Wkt) when is_binary(Wkt) ->
 		E ->
 			E
 	end;
-create(point, Coord={X, Y}) ->
+create(point, Coord={_X, _Y}) ->
 	CoordObj = gen_server:call(Port, {terms_to_coordseq, [Coord]}),
 	case CoordObj of
 		{ok, C} ->
@@ -314,7 +314,7 @@ equals(Geom1, Geom2) ->
 equals_exact(Geom1, Geom2, Tolerance) ->
 	call_predicate(equalsExact, [Geom1, Geom2, Tolerance]).
 
-interiorRing0(Geom, 0, Acc) ->
+interiorRing0(_Geom, 0, Acc) ->
 	lists:reverse(Acc);
 interiorRing0(Geom, N, Acc) ->
 	case gen_server:call(Port, {getInteriorRingN, Geom, N-1}) of
@@ -343,7 +343,7 @@ exteriorRing(Geom={ggeom, _}) ->
 		'Polygon' ->
 			Ring = gen_server:call(Port, {getExteriorRing, Geom}),
 			case Ring of
-				R = {ok, VRing} ->
+				{ok, VRing} ->
 					coords0(VRing);
 				E ->
 					E
@@ -368,7 +368,7 @@ coords_geom('Polygon', Geom) ->
 		{ok, Ring} ->
 			%Ext = coords0(Ring),
 			{Ring, interiorRing(Geom)};
-		E ->
+		_E ->
 			error
 	end.
 
