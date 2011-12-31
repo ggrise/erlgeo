@@ -40,7 +40,7 @@ Result:
 	}
 
 
-## compile
+## Compile
 
 	cd c_src
 	wget http://download.osgeo.org/geos/geos-3.2.3.tar.bz2
