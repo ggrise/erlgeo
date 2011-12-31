@@ -128,12 +128,14 @@ void erlGEOSGeom_createPolygon_r(GEOSCommand *command) {
 	GEOSGeometry *shell;
 	ERL_READ_PTR_GEOSGEOMETRY(command, shell);
 
+	GEOSGeometry** holes;
+	
 	unsigned int nholes;
+
 	ERL_READ_UNSIGNED_INT(command, nholes);
 
-	GEOSGeometry** holes;
 	ERL_READ_PTR_PTR_GEOSGEOMETRY(command, holes);
-	
+
 	result = GEOSGeom_createPolygon_r(context,shell,holes,nholes);
 
 	ERL_WRITE_PTR_GEOSGEOMETRY(command, result);
@@ -188,13 +190,14 @@ void erlGEOS_getWKBByteOrder_r(GEOSCommand *command) {
 	ERL_WRITE_INT(command, result);
 }
 void erlGEOSGeom_getCoordSeq_r(GEOSCommand *command) {
-	const GEOSCoordSequence* result;
+	//const GEOSCoordSequence* result;
 
 	GEOSContextHandle_t arg0 = command->driver_data->handle;
 	GEOSGeometry* arg1;
 	ERL_READ_PTR_GEOSGEOMETRY(command, arg1);
-	result = GEOSGeom_getCoordSeq_r(arg0,arg1);
 
+	const GEOSCoordSequence* result = GEOSGeom_getCoordSeq_r(arg0,arg1);
+	
 	ERL_WRITE_PTR_GEOSCOORDSEQUENCE(command, result);
 }
 void erlGEOSPreparedContains_r(GEOSCommand *command) {
@@ -529,6 +532,7 @@ void erlGEOSWKBReader_destroy_r(GEOSCommand *command) {
 	GEOSWKBReader * arg1;
 	ERL_READ_PTR_GEOSWKBREADER(command, arg1);
 	GEOSWKBReader_destroy_r(arg0,arg1);
+	send_ok(command);
 }
 void erlGEOSGeom_getDimensions_r(GEOSCommand *command) {
 	int result;
@@ -589,6 +593,7 @@ void erlGEOSPreparedGeom_destroy_r(GEOSCommand *command) {
 	GEOSPreparedGeometry* arg1;
 	ERL_READ_PTR_GEOSPREPAREDGEOMETRY(command, arg1);
 	GEOSPreparedGeom_destroy_r(arg0,arg1);
+	send_ok(command);
 }
 void erlGEOSCoordSeq_getDimensions_r(GEOSCommand *command) {
 	int result;

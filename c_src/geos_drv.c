@@ -193,7 +193,7 @@ GEOSFunction cmd_functions[109] = {
 	{erlGEOSDisjoint_r, 2},
 	{erlGEOSWKBReader_create_r, 0},
 	{terms_to_coordseq,1},
-	{coordseq_to_terms,2},
+	{coordseq_to_terms,1},
 	{erlWKT2WKB, 1}
 };
 static void invoke(GEOSCommand *command) {

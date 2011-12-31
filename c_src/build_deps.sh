@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-GEOS_VSN=3.2.2
+#GEOS_VSN=3.2.2
+GEOS_VSN=3.2.3
 
 if [ `basename $PWD` != "c_src" ]; then
     pushd c_src

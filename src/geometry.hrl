@@ -1,4 +1,0 @@
-
-
--record(geocontext, {port,refs}).
-

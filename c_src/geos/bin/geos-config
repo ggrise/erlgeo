@@ -31,7 +31,7 @@ case $1 in
     echo ${prefix}
      ;;
     --version)
-    echo 3.2.2
+    echo 3.2.3
      ;;
     --cflags)
     echo -I${prefix}/include 

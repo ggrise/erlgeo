@@ -62,7 +62,7 @@ init([]) ->
 %	true.
 
 handle_call({stop}, _From,State) ->
-	{stop, {port_terminated}, State};	
+	{stop, normal, State};	
 
 handle_call({coordSeq_getY,Coordsequence1,Int2}, _From, State) ->
 		Value = term_to_binary({Coordsequence1,Int2}),
@@ -121,7 +121,7 @@ handle_call({wKBReader_read,Wkbreader1,Char2,Size3}, _From, State) ->
 
 handle_call({geom_createPolygon,Geometry1,Geometry2}, _From, State) ->
 	%pop coordinate seq on success
-		Value = term_to_binary({Geometry1,length(Geometry2),Geometry2}),
+		Value = term_to_binary({Geometry1, length(Geometry2), Geometry2}),
 		Message = <<8, Value/binary>>,
 		Reply = send_command(State#state.port, Message),
 		{reply,Reply,State};
@@ -554,7 +554,7 @@ handle_call({geomToWKT,Geometry1}, _From, State) ->
 		{reply,Reply,State};
 
 
-handle_call({setWKBByteOrde,Int1}, _From, State) ->
+handle_call({setWKBByteOrder,Int1}, _From, State) ->
         Value = term_to_binary({Int1}),
         Message = <<70, Value/binary>>,
         Reply = send_command(State#state.port, Message),
@@ -810,8 +810,8 @@ handle_call({terms_to_coordseq, List}, _From, State) ->
         Reply = send_command(State#state.port, Message),
         {reply,Reply,State};
 
-handle_call({coordseq_to_terms, Coord, Dims}, _From, State) ->
-        Value = term_to_binary({Coord, Dims}),
+handle_call({coordseq_to_terms, Coord}, _From, State) ->
+        Value = term_to_binary({Coord}),
         Message = <<107, Value/binary>>,
         Reply = send_command(State#state.port, Message),
         {reply,Reply,State};
@@ -824,7 +824,7 @@ handle_call({wkt_to_wkb, Wkt}, _From, State) ->
 
 
 handle_call(_Request, _From, State) ->
-    Reply = {error, unkown_call},
+    Reply = {error, unknown_call},
     {reply, Reply, State}.
 
 %%--------------------------------------------------------------------
@@ -864,9 +864,14 @@ handle_info(_Info, State) ->
 %% @spec terminate(Reason, State) -> void()
 %% @end
 %%--------------------------------------------------------------------
+terminate(normal, State) ->
+    port_close(State#state.port),
+    ok;
 terminate(_Reason, State) ->
     port_close(State#state.port),
     ok.
+
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -887,7 +892,7 @@ send_command(Port, Command) ->
     receive
 	Data ->
 	    Data
-    after 500 ->
+    after 1000 ->
 	    io:format("Received nothing!~n"),
 	    {error, timeout}
     end.

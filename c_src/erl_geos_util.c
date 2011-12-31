@@ -329,7 +329,15 @@ void send_geometry(GEOSCommand *command, GEOSGeometry *geom) {
 	//int type = GEOSGeomTypeId_r(context, geom);
 
 	if(geom == NULL) {
-		erl_send_error(command, "nullgeom");
+
+		ErlDrvTermData spec[] = {ERL_DRV_ATOM, driver_mk_atom("ok"),
+			   ERL_DRV_ATOM, driver_mk_atom("ggeom"),
+			   ERL_DRV_ATOM, driver_mk_atom("empty"),
+			   ERL_DRV_TUPLE, 2,
+			   ERL_DRV_TUPLE, 2};
+
+		driver_output_term(command->driver_data->port, spec, sizeof(spec) / sizeof(spec[0]));
+
 		return;
 	}
 	ErlDrvTermData spec[] = {ERL_DRV_ATOM, driver_mk_atom("ok"),
@@ -373,6 +381,7 @@ void terms_to_coordseq(GEOSCommand *command) {
 			if(coordSeq!=NULL) GEOSCoordSeq_destroy_r(handle, coordSeq);
 			return;
         	}
+		
 		if(coordSeq == NULL) {
 			coordSeq = GEOSCoordSeq_create_r(handle, size, digitc);
 			if(coordSeq == NULL) {
@@ -408,10 +417,10 @@ void coordseq_to_terms(GEOSCommand *command) {
 
 	GEOSContextHandle_t handle = command->driver_data->handle;
 	GEOSCoordSequence *coordSeq;
-	int dims;
+	unsigned int dims = 2;
 
 	ERL_READ_PTR_GEOSCOORDSEQUENCE(command, coordSeq);
-	ERL_READ_INT(command, dims);
+	//ERL_READ_INT(command, dims);
 	
 	unsigned int size;
 	if(GEOSCoordSeq_getSize_r(handle, coordSeq, &size)==0) {
@@ -423,12 +432,14 @@ void coordseq_to_terms(GEOSCommand *command) {
 	//	return;
 	//} always return 3
 	
+	int allocSize = 7 + (size * (dims * 2 + 2));
+	//int allocSize = 6 + (dims*2 + 2) * size + 1;
 
-	int allocSize = 6 + (dims*2 + 2) * size + 1;
 
-
-	
 	double *digits = driver_alloc(sizeof(double) * dims * size);
+
+	memset(digits, 0, sizeof(double) * dims * size);
+
 	ErlDrvTermData *terms = driver_alloc(sizeof(ErlDrvTermData) * (allocSize));
 
 	terms[0] = ERL_DRV_ATOM;
@@ -436,7 +447,7 @@ void coordseq_to_terms(GEOSCommand *command) {
 
 	int pos = 2;
 	int i,d = 0;
-		
+
 	for(i = 0; i < size; i++) {
 
 		GEOSCoordSeq_getX_r(handle,coordSeq,i, &digits[d]);
@@ -469,8 +480,7 @@ void coordseq_to_terms(GEOSCommand *command) {
 	terms[pos++] = ERL_DRV_TUPLE;
 	terms[pos] = 2;
 
-	
-  	driver_output_term(command->driver_data->port, terms, allocSize);
+  	driver_output_term(command->driver_data->port, terms, pos+1);
 
 	driver_free(digits);
 	driver_free(terms);
