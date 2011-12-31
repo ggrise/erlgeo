@@ -1,7 +1,7 @@
 
 # Erlgeo
 
-Erlgeo an erlang wrapper to the [GEOS](http://trac.osgeo.org/geos/ "Geometry Engine, Open Source") library. Erlgeo is currently *experimental* and should not be used in production.
+Erlgeo is an erlang wrapper to the [GEOS](http://trac.osgeo.org/geos/ "Geometry Engine, Open Source") library. Erlgeo is currently *experimental* and should not be used in production.
 
 ## What is GEOS?
 GEOS stand for **G**eometry **E**ngine - **O**pen **S**ource) is a C++ port of the  Java Topology Suite (JTS). As such, it aims to contain the complete functionality of JTS in C++. This includes all the  OpenGIS Simple Features for SQL spatial predicate functions and spatial operators, as well as specific JTS enhanced topology functions.
@@ -12,14 +12,24 @@ GEOS stand for **G**eometry **E**ngine - **O**pen **S**ource) is a C++ port of t
         {ok, P1} = Context:create(wkt, WktPoly1),
         {ok, P2} = Context:create(wkt, WktPoly2),
         {ok, Result} = Context:intersection(P1,P2),
-   
+
         {ok, ResultWkt} = Context:wkt(Result),
+
+        % dispose Geometry (geom_destroy)
+        Context:dispose(P1),
+        Context:dispose(P2),
+
+        % if the geometry is use after being disposed an error is returned.
+
+        {error, geomnotreg} = Context:wkt(P1),
+
+        % If the geometry is not disposed manually, the geometry will be dispose when the function return
 
         {Context:coords(Result), ResultWkt}
     end,
-    geometry:run(Intersection, {
-		<<"POLYGON ((-1.0 50.5, -0.5 51.2, 0.3 50.9, -1 50.5))">>, 
-		<<"POLYGON((-0.7 50.3, 0.1 51.0, 0.6 50.1, -0.7 50.3))">>}).
+    geometry:run(Intersection,
+        {<<"POLYGON ((-1.0 50.5, -0.5 51.2, 0.3 50.9, -1 50.5))">>, <<"POLYGON((-0.7 50.3, 0.1 51.0, 0.6 50.1, -0.7 50.3))">>}).
+                             
 
 Result:
 

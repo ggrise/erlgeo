@@ -1,7 +1,7 @@
 % copyright Gabriel Grise <ggrise@gmail.com>
 
 -module(geo_context, [Port, RefTable]).
--export([dispose/0, wkt/1,create/2, union/2, polygonize/1,
+-export([dispose/0, dispose/1, wkt/1,create/2, union/2, polygonize/1,
 			difference/2, boundary/1, envelope/1, buffer/3,
 			simplify/2, intersection/2, intersects/2, touches/2,
 			disjoint/2, crosses/2, within/2, contains/2, type/1,
@@ -19,28 +19,48 @@ dispose() ->
 	V = ets:first(RefTable),
 	dispose_(V),
 	ets:delete_all_objects(RefTable).
-
-type(Geom={ggeom, _}) ->
-	case gen_server:call(Port, {geomType, Geom}) of
-		{ok, Type} ->
-			list_to_atom(Type);
+dispose(G={ggeom, Ptr}) ->
+	case is_registered(G) of
+		true ->
+			ets:delete(RefTable, Ptr),
+			gen_server:call(Port, {geom_destroy, G}),
+			true;
 		_ ->
-			unknown
+			false
 	end.
 
+type(Geom={ggeom, _}) ->
+	case is_registered(Geom) of
+		true ->
+			case gen_server:call(Port, {geomType, Geom}) of
+				{ok, Type} ->
+					list_to_atom(Type);
+				_ ->
+					unknown
+			end;
+		_ ->
+			{error, geomnotreg}
+	end.
+
+
 wkt(Geom={ggeom, _}) ->
-	case gen_server:call(Port, {wKTWriter_create}) of
-		{ok, Writer} ->
-			Response = case gen_server:call(Port, {wKTWriter_write, Writer, Geom}) of
-				{ok, Wkt} ->
-					{ok, list_to_binary(Wkt)};
+	case is_registered(Geom) of
+		true ->
+			case gen_server:call(Port, {wKTWriter_create}) of
+				{ok, Writer} ->
+					Response = case gen_server:call(Port, {wKTWriter_write, Writer, Geom}) of
+						{ok, Wkt} ->
+							{ok, list_to_binary(Wkt)};
+						E ->
+							E
+					end,
+					gen_server:call(Port, {wKTWriter_destroy, Writer}),
+					Response;
 				E ->
 					E
-			end,
-			gen_server:call(Port, {wKTWriter_destroy, Writer}),
-			Response;
-		E ->
-			E
+			end;
+		_ ->
+			{error, geomnotreg}
 	end.
 
 register_geometry(null) ->
@@ -369,5 +389,10 @@ coords0(G={ggeom, _}) ->
 		_ -> CoordObj
 	end.
 coords(G={ggeom, _}) ->
-	coords_geom(type(G), G).
+	case is_registered(G) of
+		true ->
+			coords_geom(type(G), G);
+		_ ->
+			{error, geomnotreg}
+	end.
 
