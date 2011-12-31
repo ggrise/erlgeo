@@ -44,7 +44,7 @@ wkt(Geom={ggeom, _}) ->
 		{ok, Writer} ->
 			Response = case gen_server:call(Port, {wKTWriter_write, Writer, Geom}) of
 				{ok, Wkt} ->
-					{ok, Wkt};
+					{ok, list_to_binary(Wkt)};
 				E ->
 					E
 			end,
@@ -261,7 +261,7 @@ simplify(Geom1, Geom2) ->
 topology_preserver_simplify(Geom, Tolerance) ->
 	call_operation(topologyPreserveSimplify, [Geom, Tolerance]).
 intersection(Geom1, Geom2) ->
-	call_operation(union, [Geom1, Geom2]).
+	call_operation(intersection, [Geom1, Geom2]).
 
 %predicate
 call_predicate(Op,Param) ->
