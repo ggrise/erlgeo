@@ -1,24 +1,13 @@
+% copyright Gabriel Grise <ggrise@gmail.com>
+
 -module(geo_context, [Port, RefTable]).
--export([dispose/0, wkt/1,create/2, union/2,
-		polygonize/1,
-		difference/2,
-		boundary/1,
-		envelope/1,
-		buffer/3,
-		simplify/2,
-		intersection/2,
-		intersects/2,
-		touches/2,
-		disjoint/2,
-		crosses/2,
-		within/2,
-		contains/2,
-		type/1,
-		overlaps/2,
-		isValid/1,hasZ/1,isRing/1,
-		isEmpty/1,coords/1,
-		equals/2, line_merge/1, point_on_surface/1, convex_hull/1, sym_difference/2, topology_preserver_simplify/2, 
-		relate/2,relate/3, equals_exact/3]).
+-export([dispose/0, wkt/1,create/2, union/2, polygonize/1,
+			difference/2, boundary/1, envelope/1, buffer/3,
+			simplify/2, intersection/2, intersects/2, touches/2,
+			disjoint/2, crosses/2, within/2, contains/2, type/1,
+			overlaps/2, isValid/1,hasZ/1,isRing/1,isEmpty/1, coords/1, 
+			equals/2, line_merge/1, point_on_surface/1, convex_hull/1, 
+			sym_difference/2, topology_preserver_simplify/2, relate/2,relate/3, equals_exact/3]).
 
 
 dispose_('$end_of_table') ->

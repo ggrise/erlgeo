@@ -1,3 +1,5 @@
+% copyright Gabriel Grise <ggrise@gmail.com>
+
 -module(geometry).
 -export([run/2, run/3, run/4]).
 
